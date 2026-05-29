@@ -64,9 +64,10 @@ public void handleMenuChoice() {
 
 public void showSongsPage() {
     System.out.println("Nummers");
-    Song song1 = new Song(" blinding lights", " the weeknd", " pop");
-    Song song2 = new Song(" kanye yeast", " kanye west", " pop");
-    Song song3 = new Song(" Niggers in paris", " kanye west", " pop");
+
+    Song song1 = new Song(" blinding lights", " the weeknd", " pop", 192);
+    Song song2 = new Song(" kanye yeast", " kanye west", " pop", 213);
+    Song song3 = new Song(" Niggers in paris", " kanye west", " pop", 204);
 
     System.out.println();
     System.out.println("=== Nummers bekijken ===");
@@ -75,7 +76,20 @@ public void showSongsPage() {
     song1.showInfo();
     song2.showInfo();
     song3.showInfo();
+
+    System.out.println("type de titel van de nummer in om het nummer aftespelen");
+    String choice = scanner.nextLine();
+    if (choice.equals("blinding lights")) {
+        song1.play();
+    }
+    else if (choice.equals("kanye yeast")){
+        song2.play();
+    }
+    else {
+        song3.play();
+    }
     pressEnterToContinue();
+
 }
 
 public void showPlaylistPage() {
