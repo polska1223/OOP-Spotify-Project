@@ -20,12 +20,29 @@ public class Song {
         System.out.println("Artiest " + artist);
         System.out.println("genre " + genre);
         System.out.println(duration / 60 + ":" + String.format("%02d", duration % 60));
-        System.out.println(isPlaying);
         System.out.println();
     }
     public void play()
     {
         isPlaying = true;
         System.out.println("Nu aan het spelen: " + title + ", Gemaakt door" + artist + ", " + duration / 60 + ":" + String.format("%02d", duration % 60));
+    }
+    public void stop()
+    {
+        isPlaying = false;
+        System.out.println(title + " is gestopt met spelen");
+
+
+    }
+    public void pauze()
+    {
+        isPlaying = false;
+        System.out.println("je hebt gepauzeerd");
+    }
+    public void skip(){
+        play();
+    }
+    public String getTitle() {
+        return title;
     }
 }
