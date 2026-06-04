@@ -1,20 +1,35 @@
 package nl.mikolajty;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Client {
     private Scanner scanner;
     private boolean isRunning;
+    private User[] users;
+    private ArrayList<User> friends;
+    
 
     public Client() {
         this.scanner = new Scanner(System.in);
         isRunning = true;
-    }
+
+        users = new User[]{
+            new User("Mikolaj"),
+            new User("Ty"),
+            new User("Lucas"),
+            new User("Erik"),
+        };
+
+           friends = new ArrayList<>();
+        
+        }
 
     public void start() {
   while (isRunning) {
     showHomepage();
     handleMenuChoice();
+    
 }
    }
    public void showHomepage() {
@@ -50,7 +65,7 @@ public void handleMenuChoice() {
         showArtistPage();
     }
     else if (choice.equals("5")) {
-        showProfilePage();
+        showUsersPage();
     }
     else if (choice.equals("0")) {
         stopApplication();
@@ -153,5 +168,155 @@ public void stopApplication(){
     isRunning = false;
     scanner.close();
 }
+
+public void showUsersPage(){
+    System.out.println();
+    System.out.println("GEBRUIKERS");
+    System.out.println("1. Bekijk alle gebruikers");
+    System.out.println("2. Voeg vriend toe");
+    System.out.println("3. Verwijder vriend");
+    System.out.println("4. Bekijk vrienden");
+    System.out.println("5. Playlist van vriend overnemen");
+    System.out.println("0. terug");
+    System.out.print("Maak een keuze: ");
+
+    String choice = scanner.nextLine();
+
+    if (choice.equals("1")) {
+        showAllUsers();
+    }
+    else if (choice.equals("2")) {
+        addFriend();
+    }
+    else if (choice.equals("3")) {
+        removeFriend();
+    }
+    else if (choice.equals("4")) {
+        showFriends();
+    }
+    else if (choice.equals("5")) {
+        copyFriendPlaylist();
+    }
+    else if (choice.equals("0")){
+        return;
+    }
+    else {
+
+        System.out.println("Ongeldige invoer.");
+        pressEnterToContinue();}
+
+}
+
+public void showAllUsers(){
+    System.out.println();
+    System.out.println("Alle gebruikers");
+
+    for (int i = 0; i < users.length; i++){
+        System.out.println((i + 1) + ". " + users[i].getUsername());
+    }
+
+    pressEnterToContinue();
+}
+
+
+public void addFriend(){
+System.out.println();
+System.out.println("welke gebruiker wil je toevoegen als vriend");
+
+for (int i = 0; i < users.length; i++){
+    System.out.println((i + 1) + ". " + users[i].getUsername());
+}
+
+System.out.println("maak een keuze");
+int choice = Integer.parseInt(scanner.nextLine());
+
+if (choice >= 1 && choice <= users.length) {
+    User selectedUser = users[choice - 1];
+    friends.add(selectedUser);
+    System.out.println(selectedUser.getUsername() + " is toegevoegd als vriend");
+} else {
+    System.out.println("ongeldige keuze");
+}
+
+pressEnterToContinue();
+
+}
+
+public void removeFriend(){
+if (friends.isEmpty()){
+    System.out.println("je hebt geen vrienden");
+    pressEnterToContinue();
+    return;
+}
+
+System.out.println();
+System.out.println("welke vriend wil je verwijderen?");
+
+for (int i = 0; i < friends.size(); i++){
+    System.out.println((i + 1) + ". " + friends.get(i).getUsername());
+}
+
+System.out.println("maak een keuze");
+int choice = Integer.parseInt(scanner.nextLine());
+
+
+if (choice >= 1 && choice <= friends.size()) {
+    User removedFriend = friends.remove(choice - 1);
+    System.out.println(removedFriend.getUsername() + " is verwijderd."); 
+
+} else {
+    System.out.println("ongeldige keuze ");
+}
+
+ pressEnterToContinue();
+}
+
+public void showFriends(){
+System.out.println();
+System.out.println("mijn vrienden:");
+
+if (friends.isEmpty()) {
+    System.out.println("je hebt nog geen vrienden");
+} else {
+    for (int i = 0; i < friends.size(); i++){
+        System.out.println((i + 1) + ". " + friends.get(i).getUsername());
+    }
+}
+
+pressEnterToContinue();
+}
+
+public void copyFriendPlaylist(){
+    if (friends.isEmpty()) {
+        System.out.println("je hebt geen vrienden");
+        pressEnterToContinue();
+        return;
+    }
+
+    System.out.println();
+    System.out.println("van welke vriend wil je de playlist overnemen?");
+
+    for( int i = 0; i < friends.size(); i++){
+
+        System.out.println((i + 1) + ". " + friends.get(i).getUsername());
+    }
+
+    System.out.println("maak een keuze");
+    
+    int choice = Integer.parseInt(scanner.nextLine());
+
+    if (choice >= 1 && choice <= friends.size()) {
+        User friend = friends.get(choice - 1);
+        System.out.println();
+    
+    System.out.println("Playlist '" + friend.getPlaylistName() + " is overgenomen");
+    
+    }
+}
+
+
+
+
+
 
 }
