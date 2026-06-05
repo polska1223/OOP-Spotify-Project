@@ -79,18 +79,60 @@ public void handleMenuChoice() {
 
 public void showSongsPage() {
     System.out.println("Nummers");
-    Song song1 = new Song(" blinding lights", " the weeknd", " pop");
-    Song song2 = new Song(" kanye yeast", " kanye west", " pop");
-    Song song3 = new Song(" Niggers in paris", " kanye west", " pop");
+    Song[] songs = {
+            new Song("blinding lights", "the weeknd", "pop", 192),
+            new Song("kanye yeast", "kanye west", "pop", 213),
+            new Song("niggers in paris", "kanye west", "pop", 204)
+    };
+
 
     System.out.println();
     System.out.println(" Nummers bekijken ");
     System.out.println();
 
-    song1.showInfo();
-    song2.showInfo();
-    song3.showInfo();
-    pressEnterToContinue();
+    for (Song song : songs) {
+        song.showInfo();
+    }
+    System.out.println("type de titel van de nummer in om het nummer aftespelen");
+    String choiceSong = scanner.nextLine();
+    Song selectedSong = null;
+
+    for (Song song : songs) {
+        if (choiceSong.equals(song.getTitle())) {
+            selectedSong = song;
+            song.play();
+        }
+    }
+    boolean isPlayling = true;
+
+    while (isPlayling) {
+        System.out.println("druk 1 om verder te gaan, 2 om te pauzeren, 3 om te skippen of 4 om te stoppen");
+        int choiceAction = scanner.nextInt();
+        scanner.nextLine();
+
+        if (choiceAction == 1){
+            pressEnterToContinue();
+            isPlayling = false;
+        }
+        else if (choiceAction == 2){
+            selectedSong.pauze();
+            System.out.println("druk 1 om te hervatten");
+            int resumeChoice = scanner.nextInt();
+            scanner.nextLine();
+            if (resumeChoice == 1){
+                selectedSong.play();
+            }
+        }
+        else if (choiceAction == 3)
+        {
+            selectedSong.skip();
+        }
+        else {
+            selectedSong.stop();
+            isPlayling = false;
+            pressEnterToContinue();
+        }
+    }
 }
 
 public void showPlaylistPage() {
