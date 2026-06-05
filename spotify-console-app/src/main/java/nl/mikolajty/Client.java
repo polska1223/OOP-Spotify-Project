@@ -84,7 +84,7 @@ public void showSongsPage() {
     Song song3 = new Song(" Niggers in paris", " kanye west", " pop");
 
     System.out.println();
-    System.out.println("=== Nummers bekijken ===");
+    System.out.println(" Nummers bekijken ");
     System.out.println();
 
     song1.showInfo();
