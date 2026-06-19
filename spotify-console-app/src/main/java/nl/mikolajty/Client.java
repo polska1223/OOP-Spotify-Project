@@ -79,12 +79,7 @@ public void handleMenuChoice() {
 
 public void showSongsPage() {
     System.out.println("Nummers");
-    Song[] songs = {
-            new Song("blinding lights", "the weeknd", "pop", 192),
-            new Song("kanye yeast", "kanye west", "pop", 213),
-            new Song("niggers in paris", "kanye west", "pop", 204)
-    };
-
+    Song[] songs = SongLibrary.getAllSongs();
 
     System.out.println();
     System.out.println("=== Nummers bekijken ===");
@@ -93,6 +88,7 @@ public void showSongsPage() {
     for (Song song : songs) {
         song.showInfo();
     }
+
     System.out.println("type de titel van de nummer in om het nummer aftespelen");
     String choiceSong = scanner.nextLine();
     Song selectedSong = null;
@@ -103,42 +99,120 @@ public void showSongsPage() {
             song.play();
         }
     }
-    boolean isPlayling = true;
-
-    while (isPlayling) {
-        System.out.println("druk 1 om verder te gaan, 2 om te pauzeren, 3 om te skippen of 4 om te stoppen");
-        int choiceAction = scanner.nextInt();
-        scanner.nextLine();
-
-        if (choiceAction == 1){
-            pressEnterToContinue();
-            isPlayling = false;
-        }
-        else if (choiceAction == 2){
-            selectedSong.pauze();
-            System.out.println("druk 1 om te hervatten");
-            int resumeChoice = scanner.nextInt();
+    if (selectedSong == null) {
+        System.out.println("Nummer niet gevonden, probeer opnieuw");
+        pressEnterToContinue();
+    } else {
+        boolean isPlayling = true;
+        while (isPlayling) {
+            System.out.println("druk 1 om verder te gaan, 2 om te pauzeren, 3 om te skippen of 4 om te stoppen");
+            int choiceAction = scanner.nextInt();
             scanner.nextLine();
-            if (resumeChoice == 1){
-                selectedSong.play();
+
+            if (choiceAction == 1){
+                pressEnterToContinue();
+                isPlayling = false;
+            }
+            else if (choiceAction == 2){
+                selectedSong.pauze();
+                System.out.println("druk 1 om te hervatten");
+                int resumeChoice = scanner.nextInt();
+                scanner.nextLine();
+                if (resumeChoice == 1){
+                    selectedSong.play();
+                }
+            }
+            else if (choiceAction == 3)
+            {
+                selectedSong.skip();
+            }
+            else {
+                selectedSong.stop();
+                isPlayling = false;
+                pressEnterToContinue();
             }
         }
-        else if (choiceAction == 3)
-        {
-            selectedSong.skip();
-        }
-        else {
-            selectedSong.stop();
-            isPlayling = false;
-            pressEnterToContinue();
-        }
     }
+
 }
 
 public void showPlaylistPage() {
+    Playlist[] playlists = PlaylistLibrary.getAllPlaylists();
+    Song[] songs = SongLibrary.getAllSongs();
     System.out.println("Playlists");
-    System.out.println("hier komen alle playlists te staan");
-    pressEnterToContinue();
+    System.out.println("typ 1 voor jouw playlisten bekijken en typ 2 om een playlist aantemaken");
+    int choiceAction = scanner.nextInt();
+    scanner.nextLine();
+
+    if (choiceAction == 1){
+        for (int i = 0; i < playlists.length; i++) {
+            System.out.println((i + 1) + ". " + playlists[i].getNaam());
+        }
+
+        System.out.println("Kies een playlist:");
+        int choicePlaylist =  scanner.nextInt();
+        scanner.nextLine();
+        Playlist selectedPlaylist = playlists[choicePlaylist - 1];
+
+        System.out.println("1. Bekijken");
+        System.out.println("2. Afspelen");
+        System.out.println("3. Aanpassen");
+        int choicePlaylistAction = scanner.nextInt();
+        scanner.nextLine();
+
+        if (choicePlaylistAction == 1){
+            selectedPlaylist.showSongs();
+        }
+        else if (choicePlaylistAction == 2){
+            selectedPlaylist.play();
+        }
+        else if (choicePlaylistAction == 3) {
+            selectedPlaylist.showSongs();
+            System.out.println("wil je een nummer toevoegen? druk 1");
+            System.out.println("wil je een nummer verwijderen? druk 2");
+            int playlistAanpassAction = scanner.nextInt();
+            scanner.nextLine();
+            if (playlistAanpassAction == 1) {
+                System.out.println("welke nummer wil je toevoegen?");
+                for (Song song : songs) {
+                    song.showInfo();
+                }
+                String choiceSong = scanner.nextLine();
+                Song selectedSong = null;
+
+                for (Song song : songs) {
+                    if (choiceSong.equals(song.getTitle())) {
+                        selectedSong = song;
+                        selectedPlaylist.addSong(song);
+                    }
+                }
+                if (selectedSong == null) {
+                    System.out.println("Nummer niet gevonden, probeer opnieuw");
+                    pressEnterToContinue();
+                }
+
+
+            }
+            else if (playlistAanpassAction == 2){
+                System.out.println("welke nummer wil je verwijderen");
+                selectedPlaylist.showSongs();
+            }
+
+        }
+        else {
+            pressEnterToContinue();
+
+        }
+        pressEnterToContinue();
+    }
+    else if (choiceAction == 2){
+
+    }
+    else {
+        showPlaylistPage();
+    }
+
+
 }
 
 public void showAlbumPage(){
