@@ -8,7 +8,7 @@ public class Client {
     private boolean isRunning;
     private User[] users;
     private ArrayList<User> friends;
-    
+    private ArrayList<Playlist> playlists = new ArrayList<>();
 
     public Client() {
         this.scanner = new Scanner(System.in);
@@ -21,8 +21,10 @@ public class Client {
             new User("Erik"),
         };
 
-           friends = new ArrayList<>();
-        
+        friends = new ArrayList<>();
+        for (Playlist playlist : PlaylistLibrary.getAllPlaylists()) {
+            playlists.add(playlist);
+        }
         }
 
     public void start() {
@@ -137,22 +139,27 @@ public void showSongsPage() {
 }
 
 public void showPlaylistPage() {
-    Playlist[] playlists = PlaylistLibrary.getAllPlaylists();
     Song[] songs = SongLibrary.getAllSongs();
     System.out.println("Playlists");
-    System.out.println("typ 1 voor jouw playlisten bekijken en typ 2 om een playlist aantemaken");
+    System.out.println("typ 1 voor jouw playlisten bekijken, 2 om een afspeellijst te maken en 3 om weg te gaan");
     int choiceAction = scanner.nextInt();
     scanner.nextLine();
-
+// dit is voor de playlist functies
     if (choiceAction == 1){
-        for (int i = 0; i < playlists.length; i++) {
-            System.out.println((i + 1) + ". " + playlists[i].getNaam());
+        for (int i = 0; i < playlists.size(); i++) {
+            System.out.println((i + 1) + ". " + playlists.get(i).getNaam());
         }
 
         System.out.println("Kies een playlist:");
         int choicePlaylist =  scanner.nextInt();
         scanner.nextLine();
-        Playlist selectedPlaylist = playlists[choicePlaylist - 1];
+        if (choicePlaylist < 1 || choicePlaylist > playlists.size()) {
+            System.out.println("Ongeldige keuze");
+            showPlaylistPage();
+            return;
+        }
+
+        Playlist selectedPlaylist = playlists.get(choicePlaylist - 1);
 
         System.out.println("1. Bekijken");
         System.out.println("2. Afspelen");
@@ -173,42 +180,78 @@ public void showPlaylistPage() {
             int playlistAanpassAction = scanner.nextInt();
             scanner.nextLine();
             if (playlistAanpassAction == 1) {
+                for (Song song : songs) {
+                song.showInfo();
+            }
                 System.out.println("welke nummer wil je toevoegen?");
-                for (Song song : songs) {
-                    song.showInfo();
+                System.out.println("typ een nummer voor welk nummer je wilt hebben");
+                for (int i = 0; i < songs.length; i++) {
+                    System.out.println((i + 1) + ". " + songs[i].getTitle());
                 }
-                String choiceSong = scanner.nextLine();
-                Song selectedSong = null;
-
-                for (Song song : songs) {
-                    if (choiceSong.equals(song.getTitle())) {
-                        selectedSong = song;
-                        selectedPlaylist.addSong(song);
-                    }
-                }
+                int choiceSong = scanner.nextInt();
+                Song selectedSong = songs[choiceSong - 1];
+                selectedPlaylist.addSong(selectedSong);
                 if (selectedSong == null) {
                     System.out.println("Nummer niet gevonden, probeer opnieuw");
                     pressEnterToContinue();
                 }
-
-
+                else {
+                    System.out.println("mm jou input lijkt vekeerd te zijn, druk enter om verder te gaan");
+                    scanner.nextLine();
+                    showPlaylistPage();
+                }
             }
+
             else if (playlistAanpassAction == 2){
+                for (Song song : songs) {
+                    song.showInfo();
+                }
                 System.out.println("welke nummer wil je verwijderen");
-                selectedPlaylist.showSongs();
+                System.out.println("typ een nummer voor welk nummer je wilt hebben");
+                for (int i = 0; i < songs.length; i++) {
+                    System.out.println((i + 1) + ". " + songs[i].getTitle());
+                }
+                int choiceSong = scanner.nextInt();
+                Song selectedSong = songs[choiceSong - 1];
+                selectedPlaylist.removeSong(selectedSong);
+                if (selectedSong == null) {
+                    System.out.println("Nummer niet gevonden, probeer opnieuw");
+                    pressEnterToContinue();
+                }
             }
+
 
         }
         else {
-            pressEnterToContinue();
-
+            System.out.println("mm jou input lijkt vekeerd te zijn, druk enter om verder te gaan");
+            scanner.nextLine();
+            showPlaylistPage();
         }
-        pressEnterToContinue();
+        showPlaylistPage();
     }
+    // dit is voor afspeellijst aanmaken
     else if (choiceAction == 2){
-
+        System.out.println("Welkom bij de playlist maker!");
+        System.out.println("hoe wil je dat je playlist heet? type cancel123 om het te stoppen");
+        String playListNaam = scanner.nextLine();
+        if (playListNaam.equals("cancel123")){
+            showPlaylistPage();
+        }
+        else{
+            Playlist nieuwePlaylist = new Playlist(playListNaam);
+            playlists.add(nieuwePlaylist);
+            System.out.println(playListNaam + "... wat een interessante naam voor een playlist! ");
+            System.out.println("Maar je nieuwe playlist is aangemaakt! druk enter om verder te gaan");
+            scanner.nextLine();
+            showPlaylistPage();
+        }
     }
-    else {
+    else if (choiceAction == 3) {
+       pressEnterToContinue();
+    }
+    else  {
+        System.out.println("er was een fout in de input, je word terug gestuurd naar de playlisten, druk enter om verder te gaan");
+        scanner.nextLine();
         showPlaylistPage();
     }
 
