@@ -8,9 +8,7 @@ public class Client {
     private boolean isRunning;
     private User[] users;
     private ArrayList<User> friends;
-    private Album[] albums;
-    private Artist[] artists;
-    
+    private ArrayList<Playlist> playlists = new ArrayList<>();
 
     public Client() {
         this.scanner = new Scanner(System.in);
@@ -23,20 +21,10 @@ public class Client {
             new User("Erik"),
         };
 
-           friends = new ArrayList<>();
-        
-           albums = new Album[]{
-    new Album("After Hours", "The Weeknd", 14),
-    new Album("Graduation", "Kanye West", 13),
-    new Album("Divide", "Ed Sheeran", 16)
-};
-
-    artists = new Artist[]{
-    new Artist("The Weeknd", "After Hours", "Blinding Lights"),
-    new Artist("Kanye West", "Graduation", "Stronger"),
-    new Artist("Ed Sheeran", "Divide", "Shape of You")
-};
-
+        friends = new ArrayList<>();
+        for (Playlist playlist : PlaylistLibrary.getAllPlaylists()) {
+            playlists.add(playlist);
+        }
         }
 
     public void start() {
@@ -93,20 +81,16 @@ public void handleMenuChoice() {
 
 public void showSongsPage() {
     System.out.println("Nummers");
-    Song[] songs = {
-            new Song("blinding lights", "the weeknd", "pop", 192),
-            new Song("kanye yeast", "kanye west", "pop", 213),
-            new Song("niggers in paris", "kanye west", "pop", 204)
-    };
-
+    Song[] songs = SongLibrary.getAllSongs();
 
     System.out.println();
-    System.out.println(" Nummers bekijken ");
+    System.out.println("=== Nummers bekijken ===");
     System.out.println();
 
     for (Song song : songs) {
         song.showInfo();
     }
+
     System.out.println("type de titel van de nummer in om het nummer aftespelen");
     String choiceSong = scanner.nextLine();
     Song selectedSong = null;
@@ -117,148 +101,173 @@ public void showSongsPage() {
             song.play();
         }
     }
-    boolean isPlayling = true;
-
-    while (isPlayling) {
-        System.out.println("druk 1 om verder te gaan, 2 om te pauzeren, 3 om te skippen of 4 om te stoppen");
-        int choiceAction = scanner.nextInt();
-        scanner.nextLine();
-
-        if (choiceAction == 1){
-            pressEnterToContinue();
-            isPlayling = false;
-        }
-        else if (choiceAction == 2){
-            selectedSong.pauze();
-            System.out.println("druk 1 om te hervatten");
-            int resumeChoice = scanner.nextInt();
+    if (selectedSong == null) {
+        System.out.println("Nummer niet gevonden, probeer opnieuw");
+        pressEnterToContinue();
+    } else {
+        boolean isPlayling = true;
+        while (isPlayling) {
+            System.out.println("druk 1 om verder te gaan, 2 om te pauzeren, 3 om te skippen of 4 om te stoppen");
+            int choiceAction = scanner.nextInt();
             scanner.nextLine();
-            if (resumeChoice == 1){
-                selectedSong.play();
+
+            if (choiceAction == 1){
+                pressEnterToContinue();
+                isPlayling = false;
+            }
+            else if (choiceAction == 2){
+                selectedSong.pauze();
+                System.out.println("druk 1 om te hervatten");
+                int resumeChoice = scanner.nextInt();
+                scanner.nextLine();
+                if (resumeChoice == 1){
+                    selectedSong.play();
+                }
+            }
+            else if (choiceAction == 3)
+            {
+                selectedSong.skip();
+            }
+            else {
+                selectedSong.stop();
+                isPlayling = false;
+                pressEnterToContinue();
             }
         }
-        else if (choiceAction == 3)
-        {
-            selectedSong.skip();
-        }
-        else {
-            selectedSong.stop();
-            isPlayling = false;
-            pressEnterToContinue();
-        }
     }
+
 }
 
 public void showPlaylistPage() {
+    Song[] songs = SongLibrary.getAllSongs();
     System.out.println("Playlists");
-    System.out.println("hier komen alle playlists te staan");
+    System.out.println("typ 1 voor jouw playlisten bekijken, 2 om een afspeellijst te maken en 3 om weg te gaan");
+    int choiceAction = scanner.nextInt();
+    scanner.nextLine();
+// dit is voor de playlist functies
+    if (choiceAction == 1){
+        for (int i = 0; i < playlists.size(); i++) {
+            System.out.println((i + 1) + ". " + playlists.get(i).getNaam());
+        }
+
+        System.out.println("Kies een playlist:");
+        int choicePlaylist =  scanner.nextInt();
+        scanner.nextLine();
+        if (choicePlaylist < 1 || choicePlaylist > playlists.size()) {
+            System.out.println("Ongeldige keuze");
+            showPlaylistPage();
+            return;
+        }
+
+        Playlist selectedPlaylist = playlists.get(choicePlaylist - 1);
+
+        System.out.println("1. Bekijken");
+        System.out.println("2. Afspelen");
+        System.out.println("3. Aanpassen");
+        int choicePlaylistAction = scanner.nextInt();
+        scanner.nextLine();
+
+        if (choicePlaylistAction == 1){
+            selectedPlaylist.showSongs();
+        }
+        else if (choicePlaylistAction == 2){
+            selectedPlaylist.play();
+        }
+        else if (choicePlaylistAction == 3) {
+            selectedPlaylist.showSongs();
+            System.out.println("wil je een nummer toevoegen? druk 1");
+            System.out.println("wil je een nummer verwijderen? druk 2");
+            int playlistAanpassAction = scanner.nextInt();
+            scanner.nextLine();
+            if (playlistAanpassAction == 1) {
+                for (Song song : songs) {
+                song.showInfo();
+            }
+                System.out.println("welke nummer wil je toevoegen?");
+                System.out.println("typ een nummer voor welk nummer je wilt hebben");
+                for (int i = 0; i < songs.length; i++) {
+                    System.out.println((i + 1) + ". " + songs[i].getTitle());
+                }
+                int choiceSong = scanner.nextInt();
+                Song selectedSong = songs[choiceSong - 1];
+                selectedPlaylist.addSong(selectedSong);
+                if (selectedSong == null) {
+                    System.out.println("Nummer niet gevonden, probeer opnieuw");
+                    pressEnterToContinue();
+                }
+                else {
+                    System.out.println("mm jou input lijkt vekeerd te zijn, druk enter om verder te gaan");
+                    scanner.nextLine();
+                    showPlaylistPage();
+                }
+            }
+
+            else if (playlistAanpassAction == 2){
+                for (Song song : songs) {
+                    song.showInfo();
+                }
+                System.out.println("welke nummer wil je verwijderen");
+                System.out.println("typ een nummer voor welk nummer je wilt hebben");
+                for (int i = 0; i < songs.length; i++) {
+                    System.out.println((i + 1) + ". " + songs[i].getTitle());
+                }
+                int choiceSong = scanner.nextInt();
+                Song selectedSong = songs[choiceSong - 1];
+                selectedPlaylist.removeSong(selectedSong);
+                if (selectedSong == null) {
+                    System.out.println("Nummer niet gevonden, probeer opnieuw");
+                    pressEnterToContinue();
+                }
+            }
+
+
+        }
+        else {
+            System.out.println("mm jou input lijkt vekeerd te zijn, druk enter om verder te gaan");
+            scanner.nextLine();
+            showPlaylistPage();
+        }
+        showPlaylistPage();
+    }
+    // dit is voor afspeellijst aanmaken
+    else if (choiceAction == 2){
+        System.out.println("Welkom bij de playlist maker!");
+        System.out.println("hoe wil je dat je playlist heet? type cancel123 om het te stoppen");
+        String playListNaam = scanner.nextLine();
+        if (playListNaam.equals("cancel123")){
+            showPlaylistPage();
+        }
+        else{
+            Playlist nieuwePlaylist = new Playlist(playListNaam);
+            playlists.add(nieuwePlaylist);
+            System.out.println(playListNaam + "... wat een interessante naam voor een playlist! ");
+            System.out.println("Maar je nieuwe playlist is aangemaakt! druk enter om verder te gaan");
+            scanner.nextLine();
+            showPlaylistPage();
+        }
+    }
+    else if (choiceAction == 3) {
+       pressEnterToContinue();
+    }
+    else  {
+        System.out.println("er was een fout in de input, je word terug gestuurd naar de playlisten, druk enter om verder te gaan");
+        scanner.nextLine();
+        showPlaylistPage();
+    }
+
+
+}
+
+public void showAlbumPage(){
+    System.out.println("Albums");
+    System.out.println("hier komen alle albums te staan");
     pressEnterToContinue();
 }
 
-public void showAlbumPage() {
-
-    while (true) {
-
-        System.out.println();
-        System.out.println("=== ALBUMS ===");
-
-        for (int i = 0; i < albums.length; i++) {
-            System.out.println((i + 1) + ". " + albums[i].getTitle());
-        }
-
-        System.out.println("0. Terug naar homepage");
-        System.out.print("Kies een album: ");
-
-        int choice = Integer.parseInt(scanner.nextLine());
-
-        if (choice == 0) {
-            return;
-        }
-
-        if (choice >= 1 && choice <= albums.length) {
-
-            Album selectedAlbum = albums[choice - 1];
-
-            while (true) {
-
-                System.out.println();
-                selectedAlbum.showInfo();
-
-                System.out.println("1. Album afspelen");
-                System.out.println("2. Nummer opslaan in playlist");
-                System.out.println("0. Terug naar album overzicht");
-                System.out.print("Maak een keuze: ");
-
-                String option = scanner.nextLine();
-
-                if (option.equals("1")) {
-
-                    System.out.println(
-                            selectedAlbum.getTitle()
-                                    + " wordt afgespeeld.");
-
-                } else if (option.equals("2")) {
-
-                    System.out.println(
-                            "Nummer opgeslagen vanuit album "
-                                    + selectedAlbum.getTitle());
-
-                } else if (option.equals("0")) {
-
-                    break;
-                } else {
-
-                    System.out.println("Ongeldige keuze.");
-                }
-            }
-        }
-    }
-}
-
-public void showArtistPage() {
-
-    while (true) {
-
-        System.out.println();
-        System.out.println(" ARTIESTEN");
-
-        for (int i = 0; i < artists.length; i++) {
-            System.out.println((i + 1) + ". " + artists[i].getName());
-        }
-
-        System.out.println("0. Terug naar homepage");
-        System.out.print("Kies een artiest: ");
-
-        int choice = Integer.parseInt(scanner.nextLine());
-
-        if (choice == 0) {
-            return;
-        }
-
-        if (choice >= 1 && choice <= artists.length) {
-
-            Artist selectedArtist = artists[choice - 1];
-
-            while (true) {
-
-                System.out.println();
-                selectedArtist.showInfo();
-
-                System.out.println("0. Terug naar artiesten overzicht");
-                System.out.print("Maak een keuze: ");
-
-                String option = scanner.nextLine();
-
-                if (option.equals("0")) {
-                    break;
-                } else {
-                    System.out.println("Ongeldige keuze.");
-                }
-            }
-        } else {
-            System.out.println("Ongeldige keuze.");
-        }
-    }
+public void showArtistPage(){
+    System.out.println("Artist");
+    System.out.println("hier komen alle albums te staan");
+    pressEnterToContinue();
 }
 
 public void showProfilePage(){
@@ -277,64 +286,53 @@ public void stopApplication(){
     scanner.close();
 }
 
-public void showUsersPage() {
+public void showUsersPage(){
+    System.out.println();
+    System.out.println("GEBRUIKERS");
+    System.out.println("1. Bekijk alle gebruikers");
+    System.out.println("2. Voeg vriend toe");
+    System.out.println("3. Verwijder vriend");
+    System.out.println("4. Bekijk vrienden");
+    System.out.println("5. Playlist van vriend overnemen");
+    System.out.println("0. terug");
+    System.out.print("Maak een keuze: ");
 
-    while (true) {
+    String choice = scanner.nextLine();
 
-        System.out.println();
-        System.out.println("GEBRUIKERS");
-        System.out.println("1. Bekijk alle gebruikers");
-        System.out.println("2. Voeg vriend toe");
-        System.out.println("3. Verwijder vriend");
-        System.out.println("4. Bekijk vrienden");
-        System.out.println("5. Playlist van vriend overnemen");
-        System.out.println("0. Terug naar homepage");
-        System.out.print("Maak een keuze: ");
-
-        String choice = scanner.nextLine();
-
-        if (choice.equals("1")) {
-            showAllUsers();
-        }
-        else if (choice.equals("2")) {
-            addFriend();
-        }
-        else if (choice.equals("3")) {
-            removeFriend();
-        }
-        else if (choice.equals("4")) {
-            showFriends();
-        }
-        else if (choice.equals("5")) {
-            copyFriendPlaylist();
-        }
-        else if (choice.equals("0")) {
-            return;
-        }
+    if (choice.equals("1")) {
+        showAllUsers();
     }
+    else if (choice.equals("2")) {
+        addFriend();
+    }
+    else if (choice.equals("3")) {
+        removeFriend();
+    }
+    else if (choice.equals("4")) {
+        showFriends();
+    }
+    else if (choice.equals("5")) {
+        copyFriendPlaylist();
+    }
+    else if (choice.equals("0")){
+        return;
+    }
+    else {
+
+        System.out.println("Ongeldige invoer.");
+        pressEnterToContinue();}
+
 }
 
-public void showAllUsers() {
+public void showAllUsers(){
+    System.out.println();
+    System.out.println("Alle gebruikers");
 
-    while (true) {
-
-        System.out.println();
-        System.out.println("ALLE GEBRUIKERS");
-
-        for (int i = 0; i < users.length; i++) {
-            System.out.println((i + 1) + ". " + users[i].getUsername());
-        }
-
-        System.out.println();
-        System.out.println("0. Terug naar gebruikersmenu");
-        System.out.print("Maak een keuze: ");
-
-        String choice = scanner.nextLine();
-
-        if (choice.equals("0")) {
-            return;
-        }
+    for (int i = 0; i < users.length; i++){
+        System.out.println((i + 1) + ". " + users[i].getUsername());
     }
+
+    pressEnterToContinue();
 }
 
 
@@ -357,9 +355,7 @@ if (choice >= 1 && choice <= users.length) {
     System.out.println("ongeldige keuze");
 }
 
-System.out.println();
-System.out.println("0. Terug naar gebruikersmenu");
-scanner.nextLine();
+pressEnterToContinue();
 
 }
 
@@ -389,37 +385,22 @@ if (choice >= 1 && choice <= friends.size()) {
     System.out.println("ongeldige keuze ");
 }
 
-System.out.println();
-System.out.println("0. Terug naar gebruikersmenu");
-scanner.nextLine();
+ pressEnterToContinue();
 }
 
-public void showFriends() {
+public void showFriends(){
+System.out.println();
+System.out.println("mijn vrienden:");
 
-    while (true) {
-
-        System.out.println();
-        System.out.println("MIJN VRIENDEN");
-
-        if (friends.isEmpty()) {
-            System.out.println("Je hebt nog geen vrienden");
-        } else {
-
-            for (int i = 0; i < friends.size(); i++) {
-                System.out.println((i + 1) + ". " + friends.get(i).getUsername());
-            }
-        }
-
-        System.out.println();
-        System.out.println("0. Terug naar gebruikersmenu");
-        System.out.print("Maak een keuze: ");
-
-        String choice = scanner.nextLine();
-
-        if (choice.equals("0")) {
-            return;
-        }
+if (friends.isEmpty()) {
+    System.out.println("je hebt nog geen vrienden");
+} else {
+    for (int i = 0; i < friends.size(); i++){
+        System.out.println((i + 1) + ". " + friends.get(i).getUsername());
     }
+}
+
+pressEnterToContinue();
 }
 
 public void copyFriendPlaylist(){
@@ -448,10 +429,6 @@ public void copyFriendPlaylist(){
     System.out.println("Playlist '" + friend.getPlaylistName() + " is overgenomen");
     
     }
-System.out.println();
-System.out.println("0. Terug naar gebruikersmenu");
-scanner.nextLine();
-
 }
 
 

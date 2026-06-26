@@ -1,4 +1,4 @@
 package nl.mikolajty;
 
-public class Album {
+public class Artiesten {
 }
