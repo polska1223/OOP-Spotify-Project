@@ -4,7 +4,9 @@ import java.util.ArrayList;
 public class Playlist {
     private String PlaylistNaam;
     private ArrayList<Song> songs = new ArrayList<>();
-
+    public ArrayList<Song> getSongs() {
+        return songs;
+    }
     public Playlist(String naam)    {
         this.PlaylistNaam = naam;
 
@@ -26,6 +28,9 @@ public class Playlist {
         for (Song song : songs) {
             song.showInfo();
         }
+    }
+    public void removeSongByIndex(int index) {
+        songs.remove(index);
     }
     public String getNaam() {
         return PlaylistNaam;

@@ -179,47 +179,37 @@ public void showPlaylistPage() {
             int playlistAanpassAction = scanner.nextInt();
             scanner.nextLine();
             if (playlistAanpassAction == 1) {
-                for (Song song : songs) {
-                song.showInfo();
-            }
                 System.out.println("welke nummer wil je toevoegen?");
-                System.out.println("typ een nummer voor welk nummer je wilt hebben");
                 for (int i = 0; i < songs.length; i++) {
                     System.out.println((i + 1) + ". " + songs[i].getTitle());
                 }
                 int choiceSong = scanner.nextInt();
+                scanner.nextLine();
+
+                if (choiceSong < 1 || choiceSong > songs.length) {
+                    System.out.println("Ongeldige keuze");
+                    showPlaylistPage();
+                    return;
+                }
+
                 Song selectedSong = songs[choiceSong - 1];
                 selectedPlaylist.addSong(selectedSong);
-                if (selectedSong == null) {
-                    System.out.println("Nummer niet gevonden, probeer opnieuw");
-                    pressEnterToContinue();
-                }
-                else {
-                    System.out.println("mm jou input lijkt vekeerd te zijn, druk enter om verder te gaan");
-                    scanner.nextLine();
-                    showPlaylistPage();
-                }
+                System.out.println(selectedSong.getTitle() + " is toegevoegd aan de playlist!");
+           showPlaylistPage();
             }
 
-            else if (playlistAanpassAction == 2){
-                for (Song song : songs) {
-                    song.showInfo();
+            else if (playlistAanpassAction == 2) {
+                for (int i = 0; i < selectedPlaylist.getSongs().size(); i++) {
+                    System.out.println((i + 1) + ". " + selectedPlaylist.getSongs().get(i).getTitle());
                 }
-                System.out.println("welke nummer wil je verwijderen");
-                System.out.println("typ een nummer voor welk nummer je wilt hebben");
-                for (int i = 0; i < songs.length; i++) {
-                    System.out.println((i + 1) + ". " + songs[i].getTitle());
-                }
+                System.out.println("welk nummer wil je verwijderen?");
                 int choiceSong = scanner.nextInt();
-                Song selectedSong = songs[choiceSong - 1];
-                selectedPlaylist.removeSong(selectedSong);
-                if (selectedSong == null) {
-                    System.out.println("Nummer niet gevonden, probeer opnieuw");
-                    pressEnterToContinue();
-                }
+                scanner.nextLine();
+
+                selectedPlaylist.removeSongByIndex(choiceSong - 1);
+                System.out.println("Nummer verwijderd!");
+                pressEnterToContinue();
             }
-
-
         }
         else {
             System.out.println("mm jou input lijkt vekeerd te zijn, druk enter om verder te gaan");
@@ -228,7 +218,6 @@ public void showPlaylistPage() {
         }
         showPlaylistPage();
     }
-    // dit is voor afspeellijst aanmaken
     else if (choiceAction == 2){
         System.out.println("Welkom bij de playlist maker!");
         System.out.println("hoe wil je dat je playlist heet? type cancel123 om het te stoppen");
