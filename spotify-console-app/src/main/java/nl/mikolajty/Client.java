@@ -144,7 +144,6 @@ public void showPlaylistPage() {
     System.out.println("typ 1 voor jouw playlisten bekijken, 2 om een afspeellijst te maken en 3 om weg te gaan");
     int choiceAction = scanner.nextInt();
     scanner.nextLine();
-// dit is voor de playlist functies
     if (choiceAction == 1){
         for (int i = 0; i < playlists.size(); i++) {
             System.out.println((i + 1) + ". " + playlists.get(i).getNaam());
@@ -258,12 +257,61 @@ public void showPlaylistPage() {
 
 }
 
-public void showAlbumPage(){
-    System.out.println("Albums");
-    System.out.println("hier komen alle albums te staan");
-    pressEnterToContinue();
-}
+    public void showAlbumPage() {
+        Album[] albums = AlbumLibrary.getAllAlbums();
 
+        System.out.println("Welkom bij albums");
+
+
+        for (int i = 0; i < albums.length; i++) {
+            System.out.println((i + 1) + ". " + albums[i].getNaam() + " - " + albums[i].getArtiest());
+        }
+
+        System.out.println("0. Terug naar hoofdmenu");
+        System.out.println("Kies een album:");
+        int choiceAlbum = scanner.nextInt();
+        scanner.nextLine();
+        if (choiceAlbum == 0) {
+            return;
+        }
+        else if (choiceAlbum < 1 || choiceAlbum > albums.length) {
+            System.out.println("Ongeldige keuze");
+            showAlbumPage();
+            return;
+        }
+
+
+        Album selectedAlbum = albums[choiceAlbum - 1];
+
+        System.out.println("1. Bekijken");
+        System.out.println("2. Afspelen");
+        int choiceAction = scanner.nextInt();
+        scanner.nextLine();
+        if (choiceAction == 1) {
+            selectedAlbum.showSongs();
+        }
+        else if (choiceAction == 2) {
+            selectedAlbum.play();
+        }
+        else {
+            System.out.println("Ongeldige keuze");
+        }
+        System.out.println("wil je terug naar het hoofdmenu? druk dan 1. wil je verder gaan met albums? druk dan 2");
+        int choiceFinish = scanner.nextInt();
+        scanner.nextLine();
+
+        if (choiceFinish == 1) {
+            pressEnterToContinue();
+        }
+        else if (choiceFinish == 2) {
+            showAlbumPage();
+        }
+        else {
+            System.out.println("Ongeldige keuze");
+            showAlbumPage();
+
+        }
+    }
 public void showArtistPage(){
     System.out.println("Artist");
     System.out.println("hier komen alle albums te staan");
